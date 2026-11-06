@@ -4,3 +4,9 @@
 *.coq
 *.conf
 .coqdeps.d
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*.class
+.pytest_cache/
