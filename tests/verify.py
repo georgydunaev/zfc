@@ -24,6 +24,7 @@ coq_files = [
     "Limit_ordinals.v",
     "Transfinite_recursion.v",
     "Choice.v",
+    "Cardinal.v",
     "zfc.v",
 ]
 

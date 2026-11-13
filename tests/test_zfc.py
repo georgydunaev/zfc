@@ -93,6 +93,7 @@ class TestZFC(unittest.TestCase):
             "Limit_ordinals.v",
             "Transfinite_recursion.v",
             "Choice.v",
+            "Cardinal.v",
             "3_Regularity.v",
             "zfc.v",
         ]
@@ -122,6 +123,7 @@ class TestZFC(unittest.TestCase):
             "Limit_ordinals.v",
             "Transfinite_recursion.v",
             "Choice.v",
+            "Cardinal.v",
             "zfc.v",
         ]
 
