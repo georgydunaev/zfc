@@ -3,9 +3,8 @@ The main source of the proofs:
 https://math.stackexchange.com/questions/452809/epsilon-induction-implies-axiom-of-foundation-or-regularity
 Author: Georgy Dunaev, georgedunaev@gmail.com
 *)
-Add LoadPath "/home/user/0my/GITHUB/".
 
-Require Import ZFC.Sets.
+Require Import Sets.
 Require Import Setoid.
 
 (* Requires for ClassicRegularity module. *)
@@ -201,7 +200,7 @@ Proof.
 exact (EXType _ (fun x:Ens => forall w, s w <-> esiacf x w)).
 Defined.
 
-Require Import ZFC.Axioms.
+Require Import Axioms.
 
 (* class must respect extensional equality
    sree is a witness of the soundness of class' definition *)
@@ -249,8 +248,8 @@ unfold INC in |- *; auto with zfc.
 Show Proof.
 Defined.
 
-Require Import ZFC.Cartesian.
-Require Import ZFC.Replacement.
+Require Import Cartesian.
+Require Import Replacement.
 
 
 

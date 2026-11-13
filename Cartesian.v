@@ -65,7 +65,7 @@ apply IN_Sing_EQ.
 apply IN_sound_right with (Sing A); auto with zfc.
 change (EQ (Paire Vide (Sing A')) (Sing B) -> EQ A B) in |- *.
 intros zz.
-elimtype F.
+cut F; [ intro Hf; elim Hf | ].
 apply (not_EQ_Sing_Vide A').
 apply EQ_tran with B.
 apply IN_Sing_EQ.

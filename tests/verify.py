@@ -1,28 +1,44 @@
 #!/usr/bin/env python3
+"""Standalone script to verify compilation of all Coq ZFC theories."""
 
 import os
 import subprocess
+import sys
 
-# List of Coq files to verify
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# List of Coq files in dependency order
 coq_files = [
-    "3_Regularity.v",
+    "Sets.v",
     "Axioms.v",
     "Cartesian.v",
     "Constructive.v",
     "Hierarchy.v",
     "Omega.v",
-    "Ordinal_theory.v",
+    "Ordinal_succession.v",
     "Plump.v",
     "Replacement.v",
     "Russell.v",
-    "Sets.v",
-    "zfc.v"
+    "Regularity.v",
+    "Ordinal_theory.v",
+    "Limit_ordinals.v",
+    "Transfinite_recursion.v",
+    "Choice.v",
+    "zfc.v",
 ]
 
-# Verify each Coq file
+all_passed = True
+
 for file in coq_files:
+    path = os.path.join(ROOT, file)
     try:
-        subprocess.run(["coqc", file], check=True)
+        res = subprocess.run(["coqc", "-q", file], cwd=ROOT, check=True, capture_output=True, text=True)
         print(f"Successfully verified {file}")
     except subprocess.CalledProcessError as e:
-        print(f"Failed to verify {file}: {e}")
+        print(f"Failed to verify {file}: exit code {e.returncode}\n{e.stderr}")
+        all_passed = False
+        break
+
+if not all_passed:
+    sys.exit(1)
+print("All Coq files successfully verified.")

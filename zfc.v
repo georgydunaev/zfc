@@ -722,7 +722,7 @@ apply IN_Sing_EQ.
 apply IN_sound_right with (Sing A); auto with zfc.
 change (EQ (Paire Vide (Sing A')) (Sing B) -> EQ A B) in |- *.
 intros zz.
-elimtype F.
+cut F; [ intro Hf; elim Hf | ].
 apply (not_EQ_Sing_Vide A').
 apply EQ_tran with B.
 apply IN_Sing_EQ.
@@ -1005,7 +1005,6 @@ apply IN_sound_left with (Nat n).
 auto with zfc.
 
 auto with zfc.
-change (IN (Nat n) (Succ (Nat n))) in |- *; auto with zfc.
 
 intros.
 elim (Union_IN Omega E H).

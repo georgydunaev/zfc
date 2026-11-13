@@ -1,12 +1,17 @@
 -R . ZFC
-Axioms.v
-Hierarchy.v
-Plump.v
 Sets.v
+Axioms.v
 Cartesian.v
-Omega.v
-Replacement.v
-zfc.v
 Constructive.v
-Ordinal_theory.v
+Hierarchy.v
+Omega.v
+Ordinal_succession.v
+Plump.v
+Replacement.v
 Russell.v
+Regularity.v
+Ordinal_theory.v
+Limit_ordinals.v
+Transfinite_recursion.v
+Choice.v
+zfc.v
