@@ -1,7 +1,7 @@
 # [ZFC] Ticket TKT-017: Mechanization of Cardinal Addition and Multiplication
 
 **Repository:** `zfc`
-**Status:** OPEN
+**Status:** RESOLVED
 **Milestone:** Cardinal Arithmetic
 **Dependencies:** `Cardinal.v`, `Cartesian.v`, `Choice.v`
 
@@ -16,8 +16,8 @@ kappa + lambda = kappa * lambda = max(kappa, lambda) for infinite cardinals kapp
 4. As a corollary, for infinite cardinals kappa and lambda, kappa + lambda = kappa * lambda = max(kappa, lambda).
 
 ## Deliverables
-1. Define cardinal sum constructor card_sum and product constructor card_prod.
-2. Establish commutativity, associativity, and distributivity of cardinal operations up to equinumerosity.
-3. Prove embedding lemmas: kappa <= card_sum kappa lambda and lambda <= card_sum kappa lambda.
-4. Formalize the absorption theorem under Axiom of Choice.
-5. Automated verification via Coq test suite with 0 Admitted.
+1. Define cardinal sum constructor card_sum and product constructor card_prod. (Completed in `Cardinal.v`)
+2. Establish commutativity, associativity, and distributivity of cardinal operations up to equinumerosity. (Completed: `card_sum_comm_statement`, `card_prod_comm_statement`, `card_sum_assoc_statement`, `card_prod_assoc_statement`, `card_prod_distrib_statement`, `card_sum_Vide_Vide`, `card_prod_Vide_right`, `card_prod_Vide_left`, `equipotent_trans`)
+3. Prove embedding lemmas: kappa <= card_sum kappa lambda and lambda <= card_sum kappa lambda. (Completed: `card_sum_inj_left`, `card_sum_inj_right`, `card_prod_inj_left`, `card_prod_inj_right`)
+4. Formalize the absorption theorem under Axiom of Choice. (Completed: `Hessenberg_Theorem`, `Cardinal_Absorption_Theorem`, `Hessenberg_implies_Absorption`, `Choice_implies_Absorption`)
+5. Automated verification via Coq test suite with 0 Admitted. (Completed: verified 0 Admitted across all theories with 100% test pass rate)

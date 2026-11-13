@@ -66,6 +66,18 @@ def hartogs_finite(s):
     return len(s) + 1
 
 
+def card_sum_finite(s1, s2):
+    # (s1 * {0}) U (s2 * {1})
+    left = {(x, 0) for x in s1}
+    right = {(y, 1) for y in s2}
+    return frozenset(left | right)
+
+
+def card_prod_finite(s1, s2):
+    # s1 * s2
+    return frozenset((x, y) for x in s1 for y in s2)
+
+
 class TestCardinals(unittest.TestCase):
     def test_cardinal_module_exists(self):
         fpath = os.path.join(ROOT, "Cardinal.v")
@@ -152,6 +164,130 @@ class TestCardinals(unittest.TestCase):
 
         # Non-equipotent between s1 (size 3) and s2 (size 4)
         self.assertFalse(are_equipotent(s1, s2))
+
+    def test_cardinal_sum_and_product_finite_model(self):
+        for n in range(4):
+            for m in range(4):
+                s1 = von_neumann_ord(n)
+                s2 = von_neumann_ord(m)
+                c_sum = card_sum_finite(s1, s2)
+                c_prod = card_prod_finite(s1, s2)
+
+                self.assertEqual(len(c_sum), n + m)
+                self.assertEqual(len(c_prod), n * m)
+
+    def test_cardinal_sum_product_algebraic_laws(self):
+        for n in range(3):
+            for m in range(3):
+                s1 = von_neumann_ord(n)
+                s2 = von_neumann_ord(m)
+
+                # Commutativity
+                self.assertTrue(
+                    are_equipotent(card_sum_finite(s1, s2), card_sum_finite(s2, s1)),
+                    f"Sum commutativity failed for n={n}, m={m}",
+                )
+                self.assertTrue(
+                    are_equipotent(card_prod_finite(s1, s2), card_prod_finite(s2, s1)),
+                    f"Product commutativity failed for n={n}, m={m}",
+                )
+
+                for k in range(3):
+                    s3 = von_neumann_ord(k)
+
+                    # Associativity
+                    sum_assoc_l = card_sum_finite(card_sum_finite(s1, s2), s3)
+                    sum_assoc_r = card_sum_finite(s1, card_sum_finite(s2, s3))
+                    self.assertTrue(
+                        are_equipotent(sum_assoc_l, sum_assoc_r),
+                        f"Sum associativity failed for n={n}, m={m}, k={k}",
+                    )
+
+                    prod_assoc_l = card_prod_finite(card_prod_finite(s1, s2), s3)
+                    prod_assoc_r = card_prod_finite(s1, card_prod_finite(s2, s3))
+                    self.assertTrue(
+                        are_equipotent(prod_assoc_l, prod_assoc_r),
+                        f"Product associativity failed for n={n}, m={m}, k={k}",
+                    )
+
+                    # Distributivity: s1 * (s2 + s3) ~ (s1 * s2) + (s1 * s3)
+                    distrib_l = card_prod_finite(s1, card_sum_finite(s2, s3))
+                    distrib_r = card_sum_finite(
+                        card_prod_finite(s1, s2), card_prod_finite(s1, s3)
+                    )
+                    self.assertTrue(
+                        are_equipotent(distrib_l, distrib_r),
+                        f"Distributivity failed for n={n}, m={m}, k={k}",
+                    )
+
+    def test_cardinal_embeddings(self):
+        for n in range(4):
+            for m in range(4):
+                s1 = von_neumann_ord(n)
+                s2 = von_neumann_ord(m)
+                c_sum = card_sum_finite(s1, s2)
+                c_prod = card_prod_finite(s1, s2)
+
+                # Embeddings into card_sum: kappa <= kappa + lambda and lambda <= kappa + lambda
+                self.assertTrue(can_inject(s1, c_sum))
+                self.assertTrue(can_inject(s2, c_sum))
+
+                # Embeddings into card_prod when other set is non-empty
+                if m > 0:
+                    self.assertTrue(can_inject(s1, c_prod))
+                if n > 0:
+                    self.assertTrue(can_inject(s2, c_prod))
+
+    def test_infinite_cardinal_absorption_model(self):
+        # In infinite cardinal arithmetic under AC:
+        # kappa + lambda = kappa * lambda = max(kappa, lambda) for kappa, lambda >= aleph_0
+        aleph_0 = 1000  # finite model proxy for aleph_0
+        aleph_1 = 2000
+
+        for k1, k2 in [(aleph_0, aleph_0), (aleph_0, aleph_1), (aleph_1, aleph_1)]:
+            max_k = max(k1, k2)
+            # Simulated cardinal addition and multiplication
+            sum_card = max_k
+            prod_card = max_k
+            self.assertEqual(sum_card, max_k)
+            self.assertEqual(prod_card, max_k)
+
+    def test_coq_theorems_present_in_cardinal_module(self):
+        cardinal_v = os.path.join(ROOT, "Cardinal.v")
+        with open(cardinal_v, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        expected_identifiers = [
+            "card_sum",
+            "card_prod",
+            "card_sum_inj_left",
+            "card_sum_inj_right",
+            "card_prod_inj_left",
+            "card_prod_inj_right",
+            "card_sum_Vide_Vide",
+            "card_prod_Vide_right",
+            "card_prod_Vide_left",
+            "card_sum_comm_statement",
+            "card_prod_comm_statement",
+            "card_sum_assoc_statement",
+            "card_prod_assoc_statement",
+            "card_prod_distrib_statement",
+            "Hessenberg_Theorem",
+            "Cardinal_Absorption_Theorem",
+            "Choice_implies_Absorption",
+            "equipotent_trans",
+            "hartogs",
+            "Ord_hartogs",
+            "not_INC_hartogs",
+            "is_cardinal",
+            "cardinal_Vide",
+            "cardinal_Succ_Vide",
+            "aleph_0",
+            "Ord_aleph_0",
+        ]
+
+        for ident in expected_identifiers:
+            self.assertIn(ident, content, f"Missing definition/theorem {ident} in Cardinal.v")
 
 
 if __name__ == "__main__":

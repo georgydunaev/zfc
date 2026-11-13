@@ -1,7 +1,7 @@
 # [ZFC] Ticket TKT-015: Formalization of Hartogs Theorem in Coq
 
 **Repository:** `zfc`
-**Status:** IN PROGRESS
+**Status:** RESOLVED
 **Milestone:** Cardinality and Ordinal Embeddings
 **Dependencies:** `Sets.v`, `Axioms.v`, `Plump.v`, `Ordinal_theory.v`
 
@@ -18,8 +18,8 @@ Specifically, for any set x:
 4. Therefore, not (injects alpha x).
 
 ## Deliverables
-1. Define injectivity (injects x y, or x <= y) and equinumerosity (equipotent x y, or x ~ y) in Cardinal.v.
-2. Define Hartogs ordinal constructor hartogs(x).
-3. Prove Ord (hartogs x) using the plump ordinal characterization (Ord_intro).
-4. Prove non-embeddability: not (injects (hartogs x) x) or not (INC (hartogs x) x).
-5. Ensure 0 Admitted and 0 admit.
+1. Define injectivity (injects x y, or x <= y) and equinumerosity (equipotent x y, or x ~ y) in Cardinal.v. (Completed)
+2. Define Hartogs ordinal constructor hartogs(x). (Completed)
+3. Prove Ord (hartogs x) using the plump ordinal characterization (Ord_intro). (Completed: `Ord_hartogs`)
+4. Prove non-embeddability: not (injects (hartogs x) x) or not (INC (hartogs x) x). (Completed: `not_INC_hartogs`, `not_injects_hartogs_Vide`, `Hartogs_Vide`)
+5. Ensure 0 Admitted and 0 admit. (Completed: verified 0 Admitted across all theories)

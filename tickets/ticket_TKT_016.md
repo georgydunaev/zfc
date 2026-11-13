@@ -1,7 +1,7 @@
 # [ZFC] Ticket TKT-016: Formalization of Initial Ordinals and Cardinal Numbers
 
 **Repository:** `zfc`
-**Status:** IN PROGRESS
+**Status:** RESOLVED
 **Milestone:** Cardinality and Ordinal Embeddings
 **Dependencies:** `Sets.v`, `Plump.v`, `Limit_ordinals.v`, `Cardinal.v`
 
@@ -17,8 +17,8 @@ In von Neumann cardinal assignment:
 5. In ZFC with Choice, every set has a unique cardinal; without Choice, initial ordinals represent well-orderable cardinalities.
 
 ## Deliverables
-1. Define is_cardinal and is_initial_ordinal in Cardinal.v.
-2. Prove cardinal_Vide: is_cardinal Vide.
-3. Prove cardinal_Succ_Vide: is_cardinal (Succ Vide).
-4. Formulate the definition of aleph_0 and verify its ordinal property.
-5. Ensure 0 Admitted and 0 admit across all proofs.
+1. Define is_cardinal and is_initial_ordinal in Cardinal.v. (Completed)
+2. Prove cardinal_Vide: is_cardinal Vide. (Completed)
+3. Prove cardinal_Succ_Vide: is_cardinal (Succ Vide). (Completed)
+4. Formulate the definition of aleph_0 and verify its ordinal property. (Completed: `aleph_0`, `Ord_aleph_0`)
+5. Ensure 0 Admitted and 0 admit across all proofs. (Completed: verified 0 Admitted across all theories)

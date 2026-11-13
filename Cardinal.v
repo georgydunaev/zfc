@@ -22,6 +22,7 @@ Require Import Cartesian.
 Require Import Plump.
 Require Import Ordinal_succession.
 Require Import Limit_ordinals.
+Require Import Choice.
 
 (* ================================================================= *)
 (* Section 1: Set Maps, Injections, Surjections, and Bijections     *)
@@ -87,6 +88,48 @@ Proof.
 intros x y [f [Hinj Hsurj]].
 exists f.
 exact Hinj.
+Qed.
+
+Theorem equipotent_trans : forall x y z : Ens,
+  equipotent x y -> equipotent y z -> equipotent x z.
+Proof.
+intros x y z [f [[[Hf_in Hf_ext] Hf_inj] [_ Hf_surj]]] [g [[[Hg_in Hg_ext] Hg_inj] [_ Hg_surj]]].
+exists (fun a => g (f a)).
+split.
+- split.
+  + split.
+    * intros a Ina. apply Hg_in. apply Hf_in. exact Ina.
+    * intros a b Ina Inb Heq. apply Hg_ext.
+      -- apply Hf_in. exact Ina.
+      -- apply Hf_in. exact Inb.
+      -- apply Hf_ext; assumption.
+  + intros a b Ina Inb Heq.
+    assert (Heq_fab : EQ (f a) (f b)).
+    {
+      apply Hg_inj.
+      - apply Hf_in. exact Ina.
+      - apply Hf_in. exact Inb.
+      - exact Heq.
+    }
+    apply (Hf_inj a b Ina Inb Heq_fab).
+- split.
+  + split.
+    * intros a Ina. apply Hg_in. apply Hf_in. exact Ina.
+    * intros a b Ina Inb Heq. apply Hg_ext.
+      -- apply Hf_in. exact Ina.
+      -- apply Hf_in. exact Inb.
+      -- apply Hf_ext; assumption.
+  + intros c Inc.
+    destruct (Hg_surj c Inc) as [b [Inb Heq_gb_c]].
+    destruct (Hf_surj b Inb) as [a [Ina Heq_fa_b]].
+    exists a.
+    split; [exact Ina |].
+    apply EQ_tran with (g b).
+    * apply Hg_ext.
+      -- apply Hf_in. exact Ina.
+      -- exact Inb.
+      -- exact Heq_fa_b.
+    * exact Heq_gb_c.
 Qed.
 
 Theorem injects_trans : forall x y z : Ens,
@@ -396,3 +439,271 @@ Lemma Ord_aleph_0 : Ord aleph_0.
 Proof.
 apply Ord_Union_Omega_vn.
 Qed.
+
+(* ================================================================= *)
+(* Section 5: Cardinal Arithmetic: Sum and Product                  *)
+(* ================================================================= *)
+
+Definition card_sum (kappa lambda : Ens) : Ens :=
+  Union (Paire (Prod kappa (Sing Vide)) (Prod lambda (Sing (Succ Vide)))).
+
+Definition card_prod (kappa lambda : Ens) : Ens :=
+  Prod kappa lambda.
+
+Lemma not_EQ_Vide_Succ_Vide : EQ Vide (Succ Vide) -> False.
+Proof.
+intros Heq.
+assert (Hin : IN Vide (Succ Vide)).
+{ apply Succ_incr. apply Ord_Vide. }
+assert (Heq_sym : EQ (Succ Vide) Vide).
+{ apply EQ_sym. exact Heq. }
+assert (Hbad : IN Vide Vide).
+{ apply (IN_sound_right Vide (Succ Vide) Vide Heq_sym Hin). }
+elim (Vide_est_vide Vide Hbad).
+Qed.
+
+Lemma card_sum_disjoint : forall a b : Ens,
+  EQ (Couple a Vide) (Couple b (Succ Vide)) -> False.
+Proof.
+intros a b Heq.
+assert (Heq_tags : EQ Vide (Succ Vide)).
+{ apply (Couple_inj_right a Vide b (Succ Vide) Heq). }
+exact (not_EQ_Vide_Succ_Vide Heq_tags).
+Qed.
+
+Theorem card_sum_inj_left : forall kappa lambda : Ens,
+  injects kappa (card_sum kappa lambda).
+Proof.
+intros kappa lambda.
+exists (fun a => Couple a Vide).
+split.
+- split.
+  + intros a Ina.
+    unfold card_sum.
+    apply IN_Union with (Prod kappa (Sing Vide)).
+    * apply IN_Paire_left.
+    * apply Couple_IN_Prod.
+      -- exact Ina.
+      -- apply IN_Sing.
+  + intros a b Ina Inb Heq.
+    apply Couple_sound_left.
+    exact Heq.
+- intros a b Ina Inb Heq.
+  apply (Couple_inj_left a Vide b Vide Heq).
+Qed.
+
+Theorem card_sum_inj_right : forall kappa lambda : Ens,
+  injects lambda (card_sum kappa lambda).
+Proof.
+intros kappa lambda.
+exists (fun b => Couple b (Succ Vide)).
+split.
+- split.
+  + intros b Inb.
+    unfold card_sum.
+    apply IN_Union with (Prod lambda (Sing (Succ Vide))).
+    * apply IN_Paire_right.
+    * apply Couple_IN_Prod.
+      -- exact Inb.
+      -- apply IN_Sing.
+  + intros a b Ina Inb Heq.
+    apply Couple_sound_left.
+    exact Heq.
+- intros a b Ina Inb Heq.
+  apply (Couple_inj_left a (Succ Vide) b (Succ Vide) Heq).
+Qed.
+
+Theorem card_prod_inj_left : forall (kappa lambda : Ens) (y : Ens),
+  IN y lambda -> injects kappa (card_prod kappa lambda).
+Proof.
+intros kappa lambda y Iny.
+unfold card_prod.
+exists (fun a => Couple a y).
+split.
+- split.
+  + intros a Ina.
+    apply Couple_IN_Prod; assumption.
+  + intros a b Ina Inb Heq.
+    apply Couple_sound_left.
+    exact Heq.
+- intros a b Ina Inb Heq.
+  apply (Couple_inj_left a y b y Heq).
+Qed.
+
+Theorem card_prod_inj_right : forall (kappa lambda : Ens) (x : Ens),
+  IN x kappa -> injects lambda (card_prod kappa lambda).
+Proof.
+intros kappa lambda x Inx.
+unfold card_prod.
+exists (fun b => Couple x b).
+split.
+- split.
+  + intros b Inb.
+    apply Couple_IN_Prod; assumption.
+  + intros a b Ina Inb Heq.
+    apply Couple_sound_right.
+    exact Heq.
+- intros a b Ina Inb Heq.
+  apply (Couple_inj_right x a x b Heq).
+Qed.
+
+Theorem card_sum_Vide_Vide_empty : forall e : Ens,
+  IN e (card_sum Vide Vide) -> False.
+Proof.
+intros e Hin.
+destruct (Union_IN (Paire (Prod Vide (Sing Vide)) (Prod Vide (Sing (Succ Vide)))) e Hin)
+  as [E1 [HinE1 HinE1_e]].
+destruct (Paire_IN (Prod Vide (Sing Vide)) (Prod Vide (Sing (Succ Vide))) E1 HinE1)
+  as [Heq1 | Heq2].
+- assert (Hin_prod : IN e (Prod Vide (Sing Vide))).
+  { apply (IN_sound_right e E1 (Prod Vide (Sing Vide)) Heq1 HinE1_e). }
+  destruct (IN_Prod_EXType Vide (Sing Vide) e Hin_prod) as [a [b Heq_ab]].
+  assert (Heq_e_ab : EQ e (Couple a b)).
+  { apply EQ_sym. exact Heq_ab. }
+  assert (Hin_c : IN (Couple a b) (Prod Vide (Sing Vide))).
+  { apply (IN_sound_left e (Couple a b) (Prod Vide (Sing Vide)) Heq_e_ab Hin_prod). }
+  destruct (Couple_Prod_IN Vide (Sing Vide) a b Hin_c) as [Ina _].
+  elim (Vide_est_vide a Ina).
+- assert (Hin_prod : IN e (Prod Vide (Sing (Succ Vide)))).
+  { apply (IN_sound_right e E1 (Prod Vide (Sing (Succ Vide))) Heq2 HinE1_e). }
+  destruct (IN_Prod_EXType Vide (Sing (Succ Vide)) e Hin_prod) as [a [b Heq_ab]].
+  assert (Heq_e_ab : EQ e (Couple a b)).
+  { apply EQ_sym. exact Heq_ab. }
+  assert (Hin_c : IN (Couple a b) (Prod Vide (Sing (Succ Vide)))).
+  { apply (IN_sound_left e (Couple a b) (Prod Vide (Sing (Succ Vide))) Heq_e_ab Hin_prod). }
+  destruct (Couple_Prod_IN Vide (Sing (Succ Vide)) a b Hin_c) as [Ina _].
+  elim (Vide_est_vide a Ina).
+Qed.
+
+Theorem card_sum_Vide_Vide : equipotent (card_sum Vide Vide) Vide.
+Proof.
+exists (fun a => a).
+split.
+- split.
+  + split.
+    * intros a Ina. elim (card_sum_Vide_Vide_empty a Ina).
+    * intros a b Ina Inb Heq. exact Heq.
+  + intros a b Ina Inb Heq. exact Heq.
+- split.
+  + split.
+    * intros a Ina. elim (card_sum_Vide_Vide_empty a Ina).
+    * intros a b Ina Inb Heq. exact Heq.
+  + intros b Inb. elim (Vide_est_vide b Inb).
+Qed.
+
+Theorem card_prod_Vide_right_empty : forall (kappa : Ens) (e : Ens),
+  IN e (card_prod kappa Vide) -> False.
+Proof.
+intros kappa e Hin.
+unfold card_prod in Hin.
+destruct (IN_Prod_EXType kappa Vide e Hin) as [a [b Heq_ab]].
+assert (Heq_e_ab : EQ e (Couple a b)).
+{ apply EQ_sym. exact Heq_ab. }
+assert (Hin_c : IN (Couple a b) (Prod kappa Vide)).
+{ apply (IN_sound_left e (Couple a b) (Prod kappa Vide) Heq_e_ab Hin). }
+destruct (Couple_Prod_IN kappa Vide a b Hin_c) as [_ Inb].
+elim (Vide_est_vide b Inb).
+Qed.
+
+Theorem card_prod_Vide_right : forall kappa : Ens,
+  equipotent (card_prod kappa Vide) Vide.
+Proof.
+intros kappa.
+exists (fun a => a).
+split.
+- split.
+  + split.
+    * intros a Ina. elim (card_prod_Vide_right_empty kappa a Ina).
+    * intros a b Ina Inb Heq. exact Heq.
+  + intros a b Ina Inb Heq. exact Heq.
+- split.
+  + split.
+    * intros a Ina. elim (card_prod_Vide_right_empty kappa a Ina).
+    * intros a b Ina Inb Heq. exact Heq.
+  + intros b Inb. elim (Vide_est_vide b Inb).
+Qed.
+
+Theorem card_prod_Vide_left_empty : forall (lambda : Ens) (e : Ens),
+  IN e (card_prod Vide lambda) -> False.
+Proof.
+intros lambda e Hin.
+unfold card_prod in Hin.
+destruct (IN_Prod_EXType Vide lambda e Hin) as [a [b Heq_ab]].
+assert (Heq_e_ab : EQ e (Couple a b)).
+{ apply EQ_sym. exact Heq_ab. }
+assert (Hin_c : IN (Couple a b) (Prod Vide lambda)).
+{ apply (IN_sound_left e (Couple a b) (Prod Vide lambda) Heq_e_ab Hin). }
+destruct (Couple_Prod_IN Vide lambda a b Hin_c) as [Ina _].
+elim (Vide_est_vide a Ina).
+Qed.
+
+Theorem card_prod_Vide_left : forall lambda : Ens,
+  equipotent (card_prod Vide lambda) Vide.
+Proof.
+intros lambda.
+exists (fun a => a).
+split.
+- split.
+  + split.
+    * intros a Ina. elim (card_prod_Vide_left_empty lambda a Ina).
+    * intros a b Ina Inb Heq. exact Heq.
+  + intros a b Ina Inb Heq. exact Heq.
+- split.
+  + split.
+    * intros a Ina. elim (card_prod_Vide_left_empty lambda a Ina).
+    * intros a b Ina Inb Heq. exact Heq.
+  + intros b Inb. elim (Vide_est_vide b Inb).
+Qed.
+
+(* Algebraic laws of cardinal operations up to equinumerosity *)
+
+Definition card_sum_comm_statement : Prop :=
+  forall kappa lambda : Ens, equipotent (card_sum kappa lambda) (card_sum lambda kappa).
+
+Definition card_prod_comm_statement : Prop :=
+  forall kappa lambda : Ens, equipotent (card_prod kappa lambda) (card_prod lambda kappa).
+
+Definition card_sum_assoc_statement : Prop :=
+  forall kappa lambda mu : Ens,
+  equipotent (card_sum (card_sum kappa lambda) mu) (card_sum kappa (card_sum lambda mu)).
+
+Definition card_prod_assoc_statement : Prop :=
+  forall kappa lambda mu : Ens,
+  equipotent (card_prod (card_prod kappa lambda) mu) (card_prod kappa (card_prod lambda mu)).
+
+Definition card_prod_distrib_statement : Prop :=
+  forall kappa lambda mu : Ens,
+  equipotent (card_prod kappa (card_sum lambda mu))
+             (card_sum (card_prod kappa lambda) (card_prod kappa mu)).
+
+(* ================================================================= *)
+(* Section 6: Cardinal Absorption Theorem under Axiom of Choice     *)
+(* ================================================================= *)
+
+(* Hessenberg's theorem states that for every infinite cardinal kappa, kappa * kappa = kappa *)
+Definition Hessenberg_Theorem : Prop :=
+  forall kappa : Ens,
+  is_cardinal kappa ->
+  injects aleph_0 kappa ->
+  equipotent (card_prod kappa kappa) kappa.
+
+(* Absorption theorem for infinite cardinals under Choice / Hessenberg: *)
+(* If kappa and lambda are infinite cardinals with lambda <= kappa,     *)
+(* then kappa + lambda = kappa * lambda = kappa.                         *)
+Definition Cardinal_Absorption_Theorem : Prop :=
+  forall kappa lambda : Ens,
+  is_cardinal kappa ->
+  is_cardinal lambda ->
+  injects aleph_0 kappa ->
+  injects lambda kappa ->
+  equipotent (card_sum kappa lambda) kappa /\
+  equipotent (card_prod kappa lambda) kappa.
+
+(* Hessenberg implies Absorption *)
+Definition Hessenberg_implies_Absorption : Prop :=
+  Hessenberg_Theorem -> Cardinal_Absorption_Theorem.
+
+(* Formalization of Absorption under the Axiom of Choice *)
+Definition Choice_implies_Absorption : Prop :=
+  Axiom_of_Choice_fun -> Cardinal_Absorption_Theorem.
+
