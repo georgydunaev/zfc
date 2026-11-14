@@ -27,6 +27,7 @@ coq_files = [
     "Cardinal.v",
     "cardinal_exponentiation.v",
     "gch_and_singular_cardinals.v",
+    "club_and_stationary.v",
     "zfc.v",
 ]
 
