@@ -26,6 +26,7 @@ coq_files = [
     "Choice.v",
     "Cardinal.v",
     "cardinal_exponentiation.v",
+    "gch_and_singular_cardinals.v",
     "zfc.v",
 ]
 
