@@ -6,6 +6,8 @@
 *.coq
 *.conf
 .coqdeps.d
+.Makefile.d
+*.d
 
 # Python bytecode & cache
 __pycache__/

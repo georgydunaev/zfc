@@ -25,6 +25,7 @@ coq_files = [
     "Transfinite_recursion.v",
     "Choice.v",
     "Cardinal.v",
+    "cardinal_exponentiation.v",
     "zfc.v",
 ]
 
